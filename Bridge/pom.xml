@@ -61,7 +61,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>nl.tue.se.bridge.MainBridge, </mainClass>
+                            <mainClass>nl.tue.se.bridge.MainBridge</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
