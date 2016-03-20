@@ -18,7 +18,7 @@ rem %py% -m pip install Dep\numpy-1.10.4-cp27-none-win32.whl
 
 %~dp0\Dep\nltk-3.2.win32.exe
 %~dp0\Dep\scipy-0.12.0-win32-superpack-python2.7.exe
-%~dp0\Dep\JPype-0.5.4.win32-py2.7.exe
+%~dp0\Dep\JPype-0.5.4.2.win32-py2.7.exe
 
 %py% -m pip install nose
 

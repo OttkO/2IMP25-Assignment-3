@@ -29,7 +29,7 @@ def producer(list):
 def main(argv):
     init()
 
-   # sent = "Adrian G. Yankov goes to school everyday by bus. he is a very lazy person; however, Roxanne beats him in being lazy."
+   
 
     #sent_detector = nltk.data.load('tokenizers/punkt/english.pickle')
     #sents = sent_detector.tokenize(sent.strip())
@@ -40,7 +40,7 @@ def main(argv):
     mediumFile = "C:/Users/Nathan/OneDrive/Opleiding/TUe/2IMP25/Assignment 3/MedPosts.xml"
     largeFile = "C:/HUGE/Posts.xml"
 
-    processor = HugeProcessor(checker, consumer, producer, largeFile)
+    processor = HugeProcessor(checker, consumer, producer, mediumFile)
 
     global prodLock
     prodLock = threading.Lock()
