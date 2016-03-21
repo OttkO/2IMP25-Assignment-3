@@ -1,5 +1,4 @@
 # -*- coding: <utf-8-sig> -*-
-import threading
 import os
 import time
 import multiprocessing
@@ -12,11 +11,17 @@ class HugeProcessor:
     local = threading.local()
     tempStorage = 100
 
-    def __init__(self, checker, consumer, producer,
-                 filePath):
-        self.checker = checker
-        self.consumer = consumer
-        self.producer = producer
+    def __init__(self, checkercl, producercl, consumercl,
+                 filePath, props):
+        self.checkercl = checkercl
+        self.consumercl = consumercl
+        self.producercl = producercl
+
+        self.checker = None
+        self.consumer = None
+        self.producer = None
+
+        self.props = props
 
         self.filePath = filePath
         file = open(filePath)
@@ -36,11 +41,10 @@ class HugeProcessor:
         start = time.clock()
 
         cores = multiprocessing.cpu_count()
-        # cores = 1
         threads = list()
 
         for i in range(cores):
-            t = threading.Thread(target=self.partialProcessing)
+            t = threading.Thread(target=self.dothreadwork)
             threads.append(t)
             t.start()
 
@@ -53,10 +57,24 @@ class HugeProcessor:
 
         print("MBs processed per second is {}, total time was {}".format(int((self.fileSize / diff) / (1000 * 1000)),
                                                                          diff))
+    def dothreadwork(self):
+        self.setup()
+        self.partialProcessing()
 
     def partialProcessing(self):
         # Contains the block this method processes
         self.local.block = self.getNextBlock()
+
+        checker = self.checker
+        producer = self.producer
+        consumer = self.consumer
+
+        if checker is None:
+            checker = self.local.checker
+        if producer is None:
+            producer = self.local.producer
+        if consumer is None:
+            consumer = self.local.consumer
 
         file = open(self.filePath, "rb+")
         store = []
@@ -76,11 +94,11 @@ class HugeProcessor:
 
                 for line in lines:
                     line = line.decode("utf-8")
-                    if self.checker(line):
-                        store.append(self.consumer(line))
+                    if checker.check(line):
+                        store.append(producer.produce(line))
 
                     if len(store) > self.tempStorage:
-                        self.producer(store)
+                        consumer.store(store)
             except UnicodeDecodeError as err:
                 # If a decode error happens at the start of the line then there is no problem, because
                 # the file.seek might put the reader in the middle of a multi-character char.
@@ -94,6 +112,21 @@ class HugeProcessor:
                 raise "Line missed"
 
             self.local.block = self.getNextBlock()
+
+    # Method that sets up this thread for processing the file.
+    def setup(self):
+        if self.props["checkerinthread"]:
+            self.local.checker = self.checkercl()
+        else:
+            self.checker = self.checkercl()
+        if self.props["producerinthread"]:
+            self.local.producer = self.producercl()
+        else:
+            self.producer = self.producercl()
+        if self.props["consumerinthread"]:
+            self.local.consumer = self.consumercl()
+        else:
+            self.consumer = self.consumercl()
 
     def getNextBlock(self):
         self.blockLock.acquire()
