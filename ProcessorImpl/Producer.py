@@ -1,13 +1,18 @@
 import threading
 
-from jpype import JClass
+import thread
+from jpype import JClass, java, attachThreadToJVM
 
 
 class Producer:
     def __init__(self):
         self.lock = threading.Lock()
+        self.id = thread.get_ident()
+        attachThreadToJVM()
+        print "Contructing instance for {}".format(self.id)
         bridgecl = JClass("nl.tue.se.bridge.MainBridge")
         self.bridge = bridgecl()
+        print "Done constructing instance for {}".format(self.id)
 
     def produce(self, line):
 
@@ -15,10 +20,13 @@ class Producer:
 
 
 
-
-
-
         self.lock.acquire()
-        print self.bridge.lineToDependencies("This is just a very regular line.")
+        #print "getting deps for {}".format(self.id)
+        try:
+            res = self.bridge.lineToDependencies("This is just a very regular line.")
+        except AttributeError as e:
+            print e
+        finally:
+            pass
         self.lock.release()
         return line

@@ -12,7 +12,7 @@ from ProcessorImpl.Producer import Producer
 
 def main(argv):
 
-    startJVM("C:\\Program Files (x86)\\Java\\jre1.8.0_73\\bin\\client\\jvm.dll", "-ea "
+    startJVM("C:\\Program Files (x86)\\Java\\jre1.8.0_73\\bin\\client\\jvm.dll", "-Xmx1024m"
              , "-Djava.class.path=Bridge\\target\\stanfordbridge-1.0-jar-with-dependencies.jar")
 
 
