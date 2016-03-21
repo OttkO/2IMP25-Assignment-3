@@ -2,6 +2,7 @@ import sys
 import threading
 
 import nltk.data
+from jpype import startJVM, shutdownJVM
 
 from FileProcessor.Boilerplate import HugeProcessor
 from ProcessorImpl.Checker import Checker
@@ -11,6 +12,8 @@ from ProcessorImpl.Producer import Producer
 
 def main(argv):
 
+    startJVM("C:\\Program Files (x86)\\Java\\jre1.8.0_73\\bin\\client\\jvm.dll", "-ea "
+             , "-Djava.class.path=Bridge\\target\\stanfordbridge-1.0-jar-with-dependencies.jar")
 
 
     #sent_detector = nltk.data.load('tokenizers/punkt/english.pickle')
@@ -26,6 +29,8 @@ def main(argv):
     processor = HugeProcessor(Checker, Producer, Consumer, mediumFile, props)
 
     processor.startProcessing()
+
+    shutdownJVM()
 
 if __name__ == "__main__":
     main(sys.argv)

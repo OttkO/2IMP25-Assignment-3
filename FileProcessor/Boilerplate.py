@@ -27,7 +27,7 @@ class HugeProcessor:
         file = open(filePath)
         self.fileSize = os.fstat(file.fileno()).st_size
 
-        # 353 MBs per block
+        # 70 MBs per block
         self.blockSize = 70 * 1000 * 1000
         # Problematic block
         # self.currStart = 2773500000
@@ -39,6 +39,13 @@ class HugeProcessor:
 
     def startProcessing(self):
         start = time.clock()
+
+        if not self.props["checkerinthread"]:
+            self.checker = self.checkercl()
+        if not self.props["producerinthread"]:
+            self.producer = self.producercl()
+        if not self.props["consumerinthread"]:
+            self.consumer = self.consumercl()
 
         cores = multiprocessing.cpu_count()
         threads = list()
@@ -117,16 +124,10 @@ class HugeProcessor:
     def setup(self):
         if self.props["checkerinthread"]:
             self.local.checker = self.checkercl()
-        else:
-            self.checker = self.checkercl()
         if self.props["producerinthread"]:
             self.local.producer = self.producercl()
-        else:
-            self.producer = self.producercl()
         if self.props["consumerinthread"]:
             self.local.consumer = self.consumercl()
-        else:
-            self.consumer = self.consumercl()
 
     def getNextBlock(self):
         self.blockLock.acquire()

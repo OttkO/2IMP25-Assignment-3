@@ -20,11 +20,7 @@ public class MainBridge {
     private LexicalizedParser parser;
     private GrammaticalStructureFactory grammaticalStructureFactory;
 
-    public MainBridge(int threads) {
-        if(threads < 1) {
-            throw new IllegalArgumentException("Zero threads is not possible, now is it?");
-        }
-
+    public MainBridge() {
         parser = LexicalizedParser.loadModel(
                 "edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz",
                 "-retainTmpSubcategories");
@@ -60,9 +56,5 @@ public class MainBridge {
         }
 
         return out;
-    }
-
-    public static void main(String[] args) {
-        System.out.println("Hello");
     }
 }
