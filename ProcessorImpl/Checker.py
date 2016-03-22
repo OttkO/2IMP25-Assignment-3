@@ -1,5 +1,6 @@
 class Checker:
     postTypeId = "PostTypeId"
+    tags = "Tags"
 
     def __init__(self):
         pass
@@ -8,9 +9,16 @@ class Checker:
         postid = 0
         try:
             postid = int(self.getvaluefromxmlattribute(line, self.postTypeId))
+
+            is_q = postid == 1
+
+            tags = self.getvaluefromxmlattribute(line, self.tags)
+
+            is_python_or_cpp = "python" in tags or "cpp" in tags or "c++" in tags
+
+            return is_q and is_python_or_cpp
         except ValueError:
-            pass
-        return postid == 1
+            return False
 
     def getvaluefromxmlattribute(self, line, attribute):
         attribute += "=\""

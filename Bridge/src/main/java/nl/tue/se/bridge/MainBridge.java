@@ -3,11 +3,16 @@ package nl.tue.se.bridge;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.Sentence;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
+import edu.stanford.nlp.pipeline.Annotation;
+import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.semgraph.SemanticGraph;
+import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations;
 import edu.stanford.nlp.trees.*;
 import edu.stanford.nlp.util.CoreMap;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
@@ -17,38 +22,50 @@ import java.util.Properties;
  */
 public class MainBridge {
 
-    private LexicalizedParser parser;
-    private GrammaticalStructureFactory grammaticalStructureFactory;
+    StanfordCoreNLP pipeline;
 
     public MainBridge() {
-        parser = LexicalizedParser.loadModel(
-                "edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz",
-                "-retainTmpSubcategories");
-        TreebankLanguagePack tlp = new PennTreebankLanguagePack();
-
-        grammaticalStructureFactory = tlp.grammaticalStructureFactory();
+        Properties props = new Properties();
+        props.setProperty("annotators", "tokenize, ssplit, pos, depparse");
+        pipeline = new StanfordCoreNLP(props);
     }
 
     public List<List<String>> linesToDependencies(List<String> lines) {
-        List<List<String>> out = new ArrayList<List<String>>();
+        String text = ""; // Add your text here!
 
-        for(String line : lines) {
-            out.add(lineToDependencies(line));
+// create an empty Annotation just with the given text
+        Annotation document = new Annotation(text);
+
+// run all Annotators on this text
+        pipeline.annotate(document);
+
+        return null;
+    }
+
+
+    public List<String>lineToDependencies(String line) {
+
+
+// create an empty Annotation just with the given text
+        Annotation document = new Annotation(line);
+
+// run all Annotators on this text
+        pipeline.annotate(document);
+
+        List<CoreMap> sentences = document.get(CoreAnnotations.SentencesAnnotation.class);
+
+        SemanticGraph deps = null;
+
+        for(CoreMap sentence: sentences) {
+            // this is the Stanford dependency graph of the current sentence
+             deps = sentence.get(SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation.class);
         }
-        return out;
-    }
 
-
-    public List<String> lineToDependencies(String line) {
-
-        String[] sent = line.split(" ");
-        Tree parse = parser.apply(Sentence.toWordList(sent));
-        GrammaticalStructure gs = grammaticalStructureFactory.newGrammaticalStructure(parse);
-        return depToStringArray(gs.typedDependenciesCCprocessed());
+        return depToStringArray(deps.typedDependencies());
 
     }
 
-    private static List<String> depToStringArray(List<TypedDependency> deps) {
+    private static List<String> depToStringArray(Collection<TypedDependency> deps) {
         List<String> out = new ArrayList<String>();
 
         for(TypedDependency dep : deps) {
@@ -56,5 +73,11 @@ public class MainBridge {
         }
 
         return out;
+    }
+
+    public static void main(String[] args) {
+        MainBridge bridge = new MainBridge();
+
+        System.out.println(bridge.lineToDependencies("Some very long sentence, however, it is not that long!"));
     }
 }

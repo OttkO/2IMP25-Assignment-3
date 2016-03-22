@@ -78,8 +78,8 @@ TEST_DOCUMENTS = [
             "Why can't you just store the 'Range'?"
         ],
         "parses": [
-            ["dep(trying-4, What-1)", "aux(trying-4, are-2)", "nsubj(trying-4, you-3)", "xsubj(do-6, you-3)", "root(ROOT-0, trying-4)", "aux(do-6, to-5)", "xcomp(trying-4, do-6)"],
-            ["dep(can't-2, Why-1)","root(ROOT-0, can't-2)","nsubj(store-5, you-3)","advmod(store-5, just-4)","ccomp(can't-2, store-5)","det('Range'?-7, the-6)","dobj(store-5, 'Range'?-7)"]
+            ["root(ROOT-0, trying-4)","dobj(trying-4, What-1)","aux(trying-4, are-2)","nsubj(trying-4, you-3)","xcomp(trying-4, do-6)","punct(trying-4, ?-7)","aux(do-6, to-5)"],
+            ["root(ROOT-0, store-6)","advmod(store-6, Why-1)","aux(store-6, ca-2)","neg(store-6, n't-3)","nsubj(store-6, you-4)","advmod(store-6, just-5)","dobj(store-6, Range-9)","punct(store-6, ?-11)","det(Range-9, the-7)","punct(Range-9, '-8)","punct(Range-9, '-10)"]
         ],
         "score": -0.7
     },

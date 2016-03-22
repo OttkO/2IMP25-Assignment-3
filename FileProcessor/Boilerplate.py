@@ -4,6 +4,8 @@ import time
 import multiprocessing
 import threading
 
+from jpype import java
+
 from FileProcessor.Block import Block
 
 
@@ -27,8 +29,8 @@ class HugeProcessor:
         file = open(filePath)
         self.fileSize = os.fstat(file.fileno()).st_size
 
-        # 70 MBs per block
-        self.blockSize = 70 * 1000 * 1000
+        # 35 MBs per block
+        self.blockSize = 35 * 1000 * 1000
         # Problematic block
         # self.currStart = 2773500000
         self.currStart = 0
@@ -131,6 +133,11 @@ class HugeProcessor:
 
     def getNextBlock(self):
         self.blockLock.acquire()
+
+
+        print "free space {}".format(java.lang.Runtime.getRuntime().freeMemory()/ (1000 * 1000))
+        java.lang.Runtime.getRuntime().gc()
+        print "free space {}".format(java.lang.Runtime.getRuntime().freeMemory()/ (1000 * 1000))
 
         if self.currEnd > self.fileSize:
             self.currEnd = self.fileSize
