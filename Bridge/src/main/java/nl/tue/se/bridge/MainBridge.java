@@ -2,6 +2,7 @@ package nl.tue.se.bridge;
 
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.Sentence;
+import edu.stanford.nlp.objectbank.ObjectBank;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
@@ -9,6 +10,7 @@ import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations;
 import edu.stanford.nlp.trees.*;
 import edu.stanford.nlp.util.CoreMap;
+import py4j.GatewayServer;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -29,11 +31,6 @@ public class MainBridge {
         props.setProperty("annotators", "tokenize, ssplit, pos, depparse");
         pipeline = new StanfordCoreNLP(props);
     }
-
-    public List<List<String>> linesToDependencies(List<String> lines) {
-        List<List<String>>
-    }
-
 
     public List<String>lineToDependencies(String line) {
 
@@ -68,8 +65,11 @@ public class MainBridge {
     }
 
     public static void main(String[] args) {
-        MainBridge bridge = new MainBridge();
-
-        System.out.println(bridge.lineToDependencies("Some very long sentence, however, it is not that long!"));
+        GatewayServer gatewayServer = new GatewayServer(new Object() {
+            public MainBridge getBridge() {
+                return new MainBridge();
+            }
+        });
+        gatewayServer.start();
     }
 }

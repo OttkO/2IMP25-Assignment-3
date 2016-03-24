@@ -1,15 +1,14 @@
 import HTMLParser
 import threading
 from bs4 import BeautifulSoup
+from py4j.java_gateway import JavaGateway
 
 from Dep import model
 import thread
 
 import nltk
-from jpype import JClass, java, attachThreadToJVM
 
 from ProcessorImpl.Checker import Checker
-from datetime import datetime
 
 global locky
 answer_time = None
@@ -26,18 +25,13 @@ class Producer:
     def __init__(self):
         self.lock = threading.Lock()
         self.id = thread.get_ident()
-        attachThreadToJVM()
-        bridgecl = JClass("nl.tue.se.bridge.MainBridge")
-        self.bridge = bridgecl()
+        gateway = JavaGateway()
+
+        self.bridge = gateway.entry_point.getBridge()
         self.sentence_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 
-        locky.acquire()
-        self.title_sentences = java.util.ArrayList()
-        locky.release()
 
     def produce(self, line):
-
-        attachThreadToJVM()
 
         q_id = int(Checker.getvaluefromxmlattribute(line, "Id"))
 
@@ -62,15 +56,17 @@ class Producer:
         else:
             fastest_answer_time_sec = (answer_time_entry["FastestAnswerTime"] - answer_time_entry["QuestionTime"]).total_seconds()
 
-        if body_pol > .666:
-            polite = "Polite"
-        elif body_pol > .333:
-            polite = "Neutral"
+        tags = Checker.getvaluefromxmlattribute(line, "Tags")
+
+        if "python" in tags and ("cpp" in tags or "c++" in tags):
+            language = "Both"
+        elif "Python" in tags:
+            language = "Python"
         else:
-            polite = "Impolite"
+            language = "C++"
 
         return {"Score": score_count, "FavCount": fav_count, "ViewCount": view_count, "FATs": fastest_answer_time_sec,
-                "PolTitle": title_pol, "PolBody": body_pol, "Polite": polite}
+                "PolTitle": title_pol, "PolBody": body_pol, "Language": language}
 
     def politeness_for_block(self, block):
         block_sentences = self.sentence_tokenizer.tokenize(block.strip())

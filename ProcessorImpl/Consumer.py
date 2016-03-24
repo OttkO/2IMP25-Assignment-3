@@ -6,24 +6,21 @@ class Consumer:
 
     def __init__(self):
 
-        self.impolite = open("impolite.csv", "a")
-        self.neutral = open("neutral.csv", "a")
-        self.polite = open("polite.csv", "a")
+        self.cpp = open("cpp.csv", "a")
+        self.python = open("python.csv", "a")
 
         self.lock = threading.Lock()
 
-        self.polite.write(self.header)
+        self.cpp.write(self.header)
 
-        self.neutral.write(self.header)
+        self.python.write(self.header)
 
-        self.impolite.write(self.header)
 
         self.close_all()
 
     def open_all(self):
-        self.impolite = open("impolite.csv", "a")
-        self.neutral = open("neutral.csv", "a")
-        self.polite = open("polite.csv", "a")
+        self.python = open("python.csv", "a")
+        self.cpp = open("cpp.csv", "a")
 
 
     def store(self, tostore):
@@ -33,27 +30,26 @@ class Consumer:
 
         for item in tostore:
 
-            if item["Polite"] == "Polite":
-                self.write_item(item, self.polite)
-            elif item["Polite"] == "Neutral":
-                self.write_item(item, self.neutral)
+            if item["Language"] == "Both":
+                self.write_item(item, self.cpp)
+                self.write_item(item, self.python)
+            elif item["Language"] == "C++":
+                self.write_item(item, self.cpp)
             else:
-                self.write_item(item, self.impolite)
+                self.write_item(item, self.python)
 
         tostore[:] = []
 
-        self.polite.flush()
-        self.neutral.flush()
-        self.impolite.flush()
+        self.python.flush()
+        self.cpp.flush()
 
         self.close_all()
 
         self.lock.release()
 
     def close_all(self):
-        self.polite.close()
-        self.neutral.close()
-        self.impolite.close()
+        self.cpp.close()
+        self.python.close()
 
     def write_item(self, item, file_to_write):
         line = "{}, {}, {}, {}, {}, {}\n".format(item["Score"], item["FavCount"], item["ViewCount"], item["FATs"],

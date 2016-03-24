@@ -8,8 +8,6 @@ import sys
 
 import thread
 
-import jpype
-from jpype import java
 from random import randint
 
 from FileProcessor.Block import Block
@@ -154,11 +152,6 @@ class HugeProcessor:
 
     def getNextBlock(self):
         self.blockLock.acquire()
-
-        if jpype.isThreadAttachedToJVM():
-        # print "free space {}".format(java.lang.Runtime.getRuntime().freeMemory()/ (1000 * 1000))
-            java.lang.Runtime.getRuntime().gc()
-        # print "free space {}".format(java.lang.Runtime.getRuntime().freeMemory()/ (1000 * 1000))
 
         if self.currEnd > self.fileSize:
             self.currEnd = self.fileSize

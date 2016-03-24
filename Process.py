@@ -3,7 +3,6 @@ import threading
 
 import gc
 import nltk.data
-from jpype import startJVM, shutdownJVM
 
 from AnswerTimeForQuestion.AConsumer import AnswerTimeConsumer
 from AnswerTimeForQuestion.AChecker import TagChecker
@@ -20,12 +19,9 @@ def main(argv):
     mediumFile = "C:/HUGE/512Posts.xml"
     largeFile = "C:/HUGE/Posts.xml"
 
-    startJVM("C:\\Program Files (x86)\\Java\\jre1.8.0_73\\bin\\client\\jvm.dll", "-ea", "-Xmx1050m"
-             , "-Djava.class.path=Bridge\\target\\stanfordbridge-1.0-jar-with-dependencies.jar")
-
     props = {"checkerinthread": True, "consumerinthread": False, "producerinthread": True, "threads": 1}
 
-    processor = HugeProcessor(TagChecker, LastAnswerTimeProducer, AnswerTimeConsumer, largeFile, props)
+    processor = HugeProcessor(TagChecker, LastAnswerTimeProducer, AnswerTimeConsumer, smallFile, props)
 
     ProcessorImpl.Producer.answer_time = processor.startProcessing().storage
 
@@ -35,11 +31,9 @@ def main(argv):
 
     props = {"checkerinthread": False, "consumerinthread": False, "producerinthread": True}
 
-    processor = HugeProcessor(Checker, ProcessorImpl.Producer.Producer, Consumer, largeFile, props)
+    processor = HugeProcessor(Checker, ProcessorImpl.Producer.Producer, Consumer, smallFile, props)
 
     processor.startProcessing()
-
-    shutdownJVM()
 
 if __name__ == "__main__":
     main(sys.argv)
