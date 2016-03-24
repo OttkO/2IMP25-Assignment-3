@@ -60,7 +60,7 @@ class Producer:
 
         if "python" in tags and ("cpp" in tags or "c++" in tags):
             language = "Both"
-        elif "Python" in tags:
+        elif "python" in tags:
             language = "Python"
         else:
             language = "C++"

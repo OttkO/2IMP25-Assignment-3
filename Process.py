@@ -21,7 +21,7 @@ def main(argv):
 
     props = {"checkerinthread": True, "consumerinthread": False, "producerinthread": True, "threads": 1}
 
-    processor = HugeProcessor(TagChecker, LastAnswerTimeProducer, AnswerTimeConsumer, smallFile, props)
+    processor = HugeProcessor(TagChecker, LastAnswerTimeProducer, AnswerTimeConsumer, largeFile, props)
 
     ProcessorImpl.Producer.answer_time = processor.startProcessing().storage
 
@@ -31,7 +31,7 @@ def main(argv):
 
     props = {"checkerinthread": False, "consumerinthread": False, "producerinthread": True}
 
-    processor = HugeProcessor(Checker, ProcessorImpl.Producer.Producer, Consumer, smallFile, props)
+    processor = HugeProcessor(Checker, ProcessorImpl.Producer.Producer, Consumer, largeFile, props)
 
     processor.startProcessing()
 
