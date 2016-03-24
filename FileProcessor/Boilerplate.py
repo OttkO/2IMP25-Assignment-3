@@ -4,7 +4,13 @@ import time
 import multiprocessing
 import threading
 
+import sys
+
+import thread
+
+import jpype
 from jpype import java
+from random import randint
 
 from FileProcessor.Block import Block
 
@@ -29,8 +35,8 @@ class HugeProcessor:
         file = open(filePath)
         self.fileSize = os.fstat(file.fileno()).st_size
 
-        # 35 MBs per block
-        self.blockSize = 35 * 1000 * 1000
+        # 32 MBs per block
+        self.blockSize = 32 * 1000 * 1000
         # Problematic block
         # self.currStart = 2773500000
         self.currStart = 0
@@ -49,7 +55,10 @@ class HugeProcessor:
         if not self.props["consumerinthread"]:
             self.consumer = self.consumercl()
 
-        cores = multiprocessing.cpu_count()
+        if "threads" in self.props:
+            cores = self.props["threads"]
+        else:
+            cores = multiprocessing.cpu_count()
         threads = list()
 
         for i in range(cores):
@@ -66,6 +75,8 @@ class HugeProcessor:
 
         print("MBs processed per second is {}, total time was {}".format(int((self.fileSize / diff) / (1000 * 1000)),
                                                                          diff))
+        return self.consumer
+
     def dothreadwork(self):
         self.setup()
         self.partialProcessing()
@@ -94,12 +105,21 @@ class HugeProcessor:
             file.seek(self.local.block.start, 0)
 
             tell = file.tell()
+            end_tell = 0
 
             try:
                 lines = file.readlines(self.blockSize)
 
                 if self.local.block.start > 0:
-                    lines.pop(0)
+                    rem = lines.pop(0)
+
+                end_tell = file.tell()
+
+                while end_tell - sys.getsizeof(lines[-1]) > self.local.block.end:
+                    end_tell -= sys.getsizeof(lines.pop())
+
+                # print "First line processed at {} is {}".format(self.local.block.start, lines[0])
+                # print "Last line processed at {} is {}".format(self.local.block.end, lines[-1])
 
                 for line in lines:
                     line = line.decode("utf-8")
@@ -114,13 +134,14 @@ class HugeProcessor:
                 if tell != self.local.block.start:
                     raise err
 
-            endTell = file.tell()
-            print("Finished block at {}".format(endTell))
+            print("Finished block at {}".format(end_tell))
 
-            if endTell < self.local.block.end:
+            if end_tell < self.local.block.end:
                 raise "Line missed"
 
             self.local.block = self.getNextBlock()
+
+        consumer.store(store)
 
     # Method that sets up this thread for processing the file.
     def setup(self):
@@ -134,10 +155,10 @@ class HugeProcessor:
     def getNextBlock(self):
         self.blockLock.acquire()
 
-
-        print "free space {}".format(java.lang.Runtime.getRuntime().freeMemory()/ (1000 * 1000))
-        java.lang.Runtime.getRuntime().gc()
-        print "free space {}".format(java.lang.Runtime.getRuntime().freeMemory()/ (1000 * 1000))
+        if jpype.isThreadAttachedToJVM():
+        # print "free space {}".format(java.lang.Runtime.getRuntime().freeMemory()/ (1000 * 1000))
+            java.lang.Runtime.getRuntime().gc()
+        # print "free space {}".format(java.lang.Runtime.getRuntime().freeMemory()/ (1000 * 1000))
 
         if self.currEnd > self.fileSize:
             self.currEnd = self.fileSize

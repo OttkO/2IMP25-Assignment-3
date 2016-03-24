@@ -7,7 +7,12 @@ SET py=C:\Python27\python.exe
 %py% -m pip uninstall numpy
 %py% -m pip uninstall nltk
 %py% -m pip uninstall jpype
+%py% -m pip uninstall python_dateutil
+%py% -m pip uninstall beautifulsoup4
+%py% -m pip uninstall lxml
 %py% -m pip install wheel
+
+%py% -m pip install python_dateutil
 
 rem py -m pip install Dep\scikit_learn-0.17-cp35-none-win32.whl
 %py% -m pip install %~dp0\Dep\scikit_learn-0.15.1-cp27-none-win32.whl
@@ -21,6 +26,8 @@ rem %py% -m pip install Dep\numpy-1.10.4-cp27-none-win32.whl
 %~dp0\Dep\JPype-0.5.4.2.win32-py2.7.exe
 
 %py% -m pip install nose
+%py% -m pip install beautifulsoup4
+%py% -m pip install lxml
 
 %py% -c "import nltk; nltk.download(""punkt"")"
 

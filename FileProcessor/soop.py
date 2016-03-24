@@ -19,16 +19,6 @@ text = "&lt;p&gt;How do you expose &pound; &amp; a &lt;strong&gt;LINQ&lt;/strong
 
 bogusCode = "<code><code>somecode</code></code>fdsds<code>otherocde</code><p>text<code>othercode</code>endtext</p>text"
 
-def texth(html):
-    soup = BeautifulSoup(html, "lxml")
-
-    [s.extract() for s in soup("pre")]
-    [s.extract() for s in soup("code")]
-
-    return soup.get_text()
-
-html_parser = HTMLParser.HTMLParser()
-unescaped = html_parser.unescape(text)
 
 
 

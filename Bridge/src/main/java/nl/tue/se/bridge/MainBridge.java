@@ -31,15 +31,7 @@ public class MainBridge {
     }
 
     public List<List<String>> linesToDependencies(List<String> lines) {
-        String text = ""; // Add your text here!
-
-// create an empty Annotation just with the given text
-        Annotation document = new Annotation(text);
-
-// run all Annotators on this text
-        pipeline.annotate(document);
-
-        return null;
+        List<List<String>>
     }
 
 
