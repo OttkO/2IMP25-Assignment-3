@@ -15,13 +15,13 @@ import ProcessorImpl.Producer
 
 def main(argv):
     smallFile = "C:/Users/Nathan/OneDrive/Opleiding/TUe/2IMP25/Assignment 3/LimPosts.xml"
-    #mediumFile = "C:/Users/Nathan/OneDrive/Opleiding/TUe/2IMP25/Assignment 3/MedPosts.xml"
-    mediumFile = "C:/HUGE/512Posts.xml"
+    mediumFile = "C:/Users/Nathan/OneDrive/Opleiding/TUe/2IMP25/Assignment 3/MedPosts.xml"
+    #mediumFile = "C:/HUGE/512Posts.xml"
     largeFile = "C:/HUGE/Posts.xml"
 
     props = {"checkerinthread": True, "consumerinthread": False, "producerinthread": True, "threads": 1}
 
-    processor = HugeProcessor(TagChecker, LastAnswerTimeProducer, AnswerTimeConsumer, largeFile, props)
+    processor = HugeProcessor(TagChecker, LastAnswerTimeProducer, AnswerTimeConsumer, mediumFile, props)
 
     ProcessorImpl.Producer.answer_time = processor.startProcessing().storage
 
@@ -31,7 +31,7 @@ def main(argv):
 
     props = {"checkerinthread": False, "consumerinthread": False, "producerinthread": True}
 
-    processor = HugeProcessor(Checker, ProcessorImpl.Producer.Producer, Consumer, largeFile, props)
+    processor = HugeProcessor(Checker, ProcessorImpl.Producer.Producer, Consumer, mediumFile, props)
 
     processor.startProcessing()
 
