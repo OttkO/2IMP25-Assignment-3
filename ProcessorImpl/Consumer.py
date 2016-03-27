@@ -1,3 +1,4 @@
+import os
 import threading
 
 
@@ -11,10 +12,11 @@ class Consumer:
 
         self.lock = threading.Lock()
 
-        self.cpp.write(self.header)
+        if os.stat("cpp.csv").st_size == 0:
+            self.cpp.write(self.header)
 
-        self.python.write(self.header)
-
+        if os.stat("python.csv").st_size == 0:
+            self.python.write(self.header)
 
         self.close_all()
 

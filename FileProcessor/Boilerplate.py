@@ -33,12 +33,18 @@ class HugeProcessor:
         file = open(filePath)
         self.fileSize = os.fstat(file.fileno()).st_size
 
+        if "start" not in self.props:
+            self.props["start"] = 0
+        if "end" not in self.props:
+            self.props["end"] = self.fileSize
+
         # 32 MBs per block
         self.blockSize = 32 * 1000 * 1000
         # Problematic block
         # self.currStart = 2773500000
-        self.currStart = 0
+        self.currStart = self.props["start"]
         self.currEnd = self.currStart + self.blockSize
+        self.end = self.props["end"]
         self.blockLock = threading.Lock()
 
         print("Total filesize is {}".format(self.fileSize))
@@ -71,7 +77,7 @@ class HugeProcessor:
 
         diff = end - start
 
-        print("MBs processed per second is {}, total time was {}".format(int((self.fileSize / diff) / (1000 * 1000)),
+        print("MBs processed per second is {0:.3f}, total time was {1}".format(float((self.fileSize / diff) / (1000 * 1000)),
                                                                          diff))
         return self.consumer
 
@@ -101,6 +107,8 @@ class HugeProcessor:
             print("Started processing a block that starts at {} and ends at {}".format(self.local.block.start,
                                                                                        self.local.block.end))
             file.seek(self.local.block.start, 0)
+
+            blockStart = time.clock()
 
             tell = file.tell()
             end_tell = 0
@@ -132,7 +140,10 @@ class HugeProcessor:
                 if tell != self.local.block.start:
                     raise err
 
-            print("Finished block at {}".format(end_tell))
+            diff = time.clock() - blockStart
+
+            print "Finished block at {0} this took {1} seconds average speed in MB/s is therefore {2:.3f}".format(end_tell, diff,
+                                                                                float(((end_tell - self.local.block.start) / diff) / (1000 * 1000)))
 
             if end_tell < self.local.block.end:
                 raise "Line missed"
@@ -153,12 +164,12 @@ class HugeProcessor:
     def getNextBlock(self):
         self.blockLock.acquire()
 
-        if self.currEnd > self.fileSize:
-            self.currEnd = self.fileSize
+        if self.currEnd > self.end:
+            self.currEnd = self.end
 
         block = None
 
-        if self.currStart > self.fileSize:
+        if self.currStart > self.end:
             self.currStart = -1
             self.currEnd = -1
             block = Block(-1, -1)

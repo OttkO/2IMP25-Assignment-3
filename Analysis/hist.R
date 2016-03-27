@@ -27,6 +27,8 @@ augmentWithPoliteness <- function(rawData, titlePol, titleImp, bodyPol, bodyImp)
 politeness = factor(c("Polite", "Neutral", "Impolite"))
 
 doKruskalAndWilc <- function(soData) {
-  kruskal.test(soData$ViewCount~soData$PoliteBodyCategory)
+  kruskal.test(soData$Score~soData$PoliteBodyCategory)
   wilcox.test(soData$Score[soData$PoliteBodyCategory=="Neutral"], soData$Score[soData$PoliteBodyCategory=="Impolite"], conf.int=T, paired=F)
+  wilcox.test(soData$Score[soData$PoliteBodyCategory=="Neutral"], soData$Score[soData$PoliteBodyCategory=="Polite"], conf.int=T, paired=F)
+  wilcox.test(soData$Score[soData$PoliteBodyCategory=="Polite"], soData$Score[soData$PoliteBodyCategory=="Impolite"], conf.int=T, paired=F)
 }
