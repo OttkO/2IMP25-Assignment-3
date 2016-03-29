@@ -4,7 +4,7 @@ normalizeHist <- function(inVector, breaks) {
   mydensity <- density(inVector)
   mydensity$y <- mydensity$y * multiplier[1]
   
-  plot(myhist)
+  
   lines(mydensity)
 }
 

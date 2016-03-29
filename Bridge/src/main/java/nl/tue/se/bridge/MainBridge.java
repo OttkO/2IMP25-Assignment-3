@@ -1,18 +1,14 @@
 package nl.tue.se.bridge;
 
 import edu.stanford.nlp.ling.CoreAnnotations;
-import edu.stanford.nlp.ling.Sentence;
-import edu.stanford.nlp.objectbank.ObjectBank;
-import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations;
-import edu.stanford.nlp.trees.*;
+import edu.stanford.nlp.trees.TypedDependency;
 import edu.stanford.nlp.util.CoreMap;
 import py4j.GatewayServer;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,11 +30,8 @@ public class MainBridge {
 
     public List<String>lineToDependencies(String line) {
 
-
-// create an empty Annotation just with the given text
         Annotation document = new Annotation(line);
 
-// run all Annotators on this text
         pipeline.annotate(document);
 
         List<CoreMap> sentences = document.get(CoreAnnotations.SentencesAnnotation.class);
@@ -46,7 +39,6 @@ public class MainBridge {
         SemanticGraph deps = null;
 
         for(CoreMap sentence: sentences) {
-            // this is the Stanford dependency graph of the current sentence
              deps = sentence.get(SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation.class);
         }
 

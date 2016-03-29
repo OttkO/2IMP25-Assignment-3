@@ -21,10 +21,7 @@ gateway_running = False
 
 
 def main(argv):
-    smallFile = "C:/Users/Nathan/OneDrive/Opleiding/TUe/2IMP25/Assignment 3/LimPosts.xml"
-    # mediumFile = "C:/Users/Nathan/OneDrive/Opleiding/TUe/2IMP25/Assignment 3/MedPosts.xml"
-    mediumFile = "C:/HUGE/512Posts.xml"
-    largeFile = "C:/HUGE/Posts.xml"
+    largeFile = "C:/Posts.xml"
 
     props = {"checkerinthread": True, "consumerinthread": False, "producerinthread": True, "threads": 1}
 
